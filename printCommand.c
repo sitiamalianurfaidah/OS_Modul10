@@ -1,13 +1,55 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+
+void printHelp() {
+    printf("Usage: print [option] {text}\n");
+    printf("Flags:\n");
+    printf("  -u {text} : Print in UPPERCASE\n");
+    printf("  -l {text} : Print in lowercase\n");
+    printf("  -h        : Show this help message\n");
+}
+
+void toUpper(char *s) {
+    for (int i = 0; s[i]; i++) s[i] = toupper(s[i]);
+}
+
+void toLower(char *s) {
+    for (int i = 0; s[i]; i++) s[i] = tolower(s[i]);
+}
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Usage: print {something}\n");
-        return 1;
+    int opt;
+    int upper = 0, lower = 0;
+    opterr = 0;
+
+    while ((opt = getopt(argc, argv, "ulh")) != -1) {
+        switch (opt) {
+            case 'u':
+                upper = 1;
+                break;
+            case 'l':
+                lower = 1;
+                break;
+            case 'h':
+                printHelp();
+                return 0;
+            case '?':
+                printf("unknown option: -%c\n", optopt);
+                break;
+        }
     }
+
     printf("ini diprint: ");
-    for (int i = 1; i < argc; i++)
-        printf("%s ", argv[i]);
+    for (int i = optind; i < argc; i++) {
+        char *word = strdup(argv[i]);
+        if (upper) toUpper(word);
+        else if (lower) toLower(word);
+        printf("%s ", word);
+        free(word);
+    }
     printf("\n");
     return 0;
 }

@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void encrypt(char *str) {
     while (*str) {
@@ -8,21 +10,51 @@ void encrypt(char *str) {
     }
 }
 
+void showHelp() {
+    printf("Usage: rahasiabanget -f {filename} -c {content}\n");
+    printf("Flags:\n");
+    printf("  -f {filename} : Output file name\n");
+    printf("  -c {content}  : Content to encrypt (use quotes for multi-word)\n");
+    printf("  -h            : Show help message\n");
+}
+
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("Usage: rahasiabanget {filename} {content}\n");
+    char *filename = NULL;
+    char *content = NULL;
+    int opt;
+
+    while ((opt = getopt(argc, argv, "f:c:h")) != -1) {
+        switch (opt) {
+            case 'f':
+                filename = optarg;
+                break;
+            case 'c':
+                content = optarg;
+                break;
+            case 'h':
+                showHelp();
+                return 0;
+            default:
+                fprintf(stderr, "Unknown option -%c\n", optopt);
+                return 1;
+        }
+    }
+
+    if (!filename || !content) {
+        fprintf(stderr, "Missing required arguments. Use -h for help.\n");
         return 1;
     }
-    FILE *fp = fopen(argv[1], "w");
+
+    encrypt(content);
+
+    FILE *fp = fopen(filename, "w");
     if (!fp) {
         perror("fopen");
         return 1;
     }
-    for (int i = 2; i < argc; i++) {
-        encrypt(argv[i]);
-        fprintf(fp, "%s ", argv[i]);
-    }
+
+    fprintf(fp, "%s\n", content);
     fclose(fp);
-    printf("Encrypted file %s created.\n", argv[1]);
+    printf("Encrypted file '%s' created.\n", filename);
     return 0;
 }
