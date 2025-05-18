@@ -14,7 +14,7 @@ void showHelp() {
 int main(int argc, char *argv[]) {
     int opt;
     char *filename = NULL;
-    char *content = NULL;
+    int c_index = -1;
 
     while ((opt = getopt(argc, argv, "f:c:h")) != -1) {
         switch (opt) {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
                 filename = optarg;
                 break;
             case 'c':
-                content = optarg;
+                c_index = optind - 1;
                 break;
             case 'h':
                 showHelp();
@@ -33,18 +33,41 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (!filename || !content) {
+    if (!filename || c_index == -1) {
         fprintf(stderr, "Missing -f or -c flag\n");
         return 1;
+    }
+
+    // Hitung panjang semua argumen setelah -c
+    int len = 0;
+    for (int i = c_index; i < argc; i++) {
+        len += strlen(argv[i]) + 1;
+    }
+
+    char *content = malloc(len);
+    if (!content) {
+        perror("malloc");
+        return 1;
+    }
+
+    content[0] = '\0';
+    for (int i = c_index; i < argc; i++) {
+        strcat(content, argv[i]);
+        if (i < argc - 1)
+            strcat(content, " ");
     }
 
     FILE *fp = fopen(filename, "w");
     if (!fp) {
         perror("fopen");
+        free(content);
         return 1;
     }
+
     fprintf(fp, "%s\n", content);
     fclose(fp);
+
     printf("File %s created and written.\n", filename);
+    free(content);
     return 0;
 }

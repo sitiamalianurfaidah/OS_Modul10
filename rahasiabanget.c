@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
     char *filename = NULL;
     char *content = NULL;
     int opt;
+    int content_start = -1;
 
     while ((opt = getopt(argc, argv, "f:c:h")) != -1) {
         switch (opt) {
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
                 filename = optarg;
                 break;
             case 'c':
-                content = optarg;
+                content_start = optind - 1;
                 break;
             case 'h':
                 showHelp();
@@ -40,9 +41,29 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (!filename || !content) {
+    if (!filename || content_start == -1) {
         fprintf(stderr, "Missing required arguments. Use -h for help.\n");
         return 1;
+    }
+
+    // Hitung panjang total content
+    int len = 0;
+    for (int i = content_start; i < argc; i++) {
+        if (argv[i][0] == '-' && strlen(argv[i]) == 2) break;
+        len += strlen(argv[i]) + 1;
+    }
+
+    content = malloc(len);
+    if (!content) {
+        perror("malloc");
+        return 1;
+    }
+
+    content[0] = '\0';
+    for (int i = content_start; i < argc; i++) {
+        if (argv[i][0] == '-' && strlen(argv[i]) == 2) break;
+        strcat(content, argv[i]);
+        if (i < argc - 1) strcat(content, " ");
     }
 
     encrypt(content);
@@ -50,11 +71,13 @@ int main(int argc, char *argv[]) {
     FILE *fp = fopen(filename, "w");
     if (!fp) {
         perror("fopen");
+        free(content);
         return 1;
     }
 
     fprintf(fp, "%s\n", content);
     fclose(fp);
     printf("Encrypted file '%s' created.\n", filename);
+    free(content);
     return 0;
 }

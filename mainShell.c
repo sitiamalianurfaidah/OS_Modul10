@@ -202,14 +202,14 @@ void executeCommand(char *cmd) {
             execv("./tebakangka", args);
         else if (strcmp(args[0], "trash") == 0)
             execv("./trash", args);
-        else if (strcmp(args[0], "netlab-fortune") == 0)
-            execv("./netlab-fortune", args);
-        else if (strcmp(args[0], "kalkulator") == 0)
-            execv("./kalkulator", args);
-        else if (strcmp(args[0], "konversiwaktu") == 0)
-            execv("./konversiwaktu", args);
-        else if (strcmp(args[0], "randomgen") == 0)
-            execv("./randomgen", args);
+        else if (strcmp(args[0], "netlab_fortune") == 0)
+            execv("./netlab_fortune", args);
+        else if (strcmp(args[0], "calc") == 0)
+            execv("./calc", args);
+        else if (strcmp(args[0], "timeconv") == 0)
+            execv("./timeconv", args);
+        else if (strcmp(args[0], "randgen") == 0)
+            execv("./randgen", args);
         else if (strcmp(args[0], "wordcount") == 0)
             execv("./wordcount", args);
         else if (strcmp(args[0], "textstats") == 0)

@@ -41,15 +41,28 @@ int main(int argc, char *argv[]) {
                 break;
         }
     }
-
-    printf("ini diprint: ");
-    for (int i = optind; i < argc; i++) {
-        char *word = strdup(argv[i]);
-        if (upper) toUpper(word);
-        else if (lower) toLower(word);
-        printf("%s ", word);
-        free(word);
+// Jika ada argumen setelah opsi, print sesuai argumen
+    if (optind < argc) {
+        printf("ini diprint: ");
+        for (int i = optind; i < argc; i++) {
+            char *word = strdup(argv[i]);
+            if (upper) toUpper(word);
+            else if (lower) toLower(word);
+            printf("%s ", word);
+            free(word);
+        }
+        printf("\n");
+    } else {
+        // Tidak ada argumen -> baca dari stdin sampai EOF
+        printf("ini diprint: ");
+        char buffer[1024];
+        while (fgets(buffer, sizeof(buffer), stdin)) {
+            if (upper) toUpper(buffer);
+            else if (lower) toLower(buffer);
+            printf("%s", buffer);
+        }
+        // Pastikan ada newline jika perlu
+        // printf("\n");
     }
-    printf("\n");
     return 0;
 }
