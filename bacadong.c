@@ -11,6 +11,7 @@ void printHelp() {
     printf("  -h            : Show this help message\n");
 }
 
+
 int main(int argc, char *argv[]) {
     char *filename = NULL;
     int showLineNumber = 0;
